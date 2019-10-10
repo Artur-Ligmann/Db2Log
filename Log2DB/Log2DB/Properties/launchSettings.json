@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Log2DB": {
+      "commandName": "Project",
+      "commandLineArgs": "c:\\Zadania"
+    }
+  }
+}
