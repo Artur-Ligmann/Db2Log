@@ -18,7 +18,7 @@ namespace Log2DB.Tests
             var testDbPath = @"MyData.db";
             File.Delete(testDbPath);
 
-            var input = FileLogService.LoadFromFile(@"testlogfile.txt");
+            var input = FileLogService.LoadFromFile(@"..\..\..\..\..\logfile.txt");
             var output = new LogWriterService(testDbPath, "LogEntries");
             var service = new LogParsingService(input, output, 4);
 
