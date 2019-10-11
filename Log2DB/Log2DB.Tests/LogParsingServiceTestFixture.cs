@@ -56,6 +56,29 @@ namespace Log2DB.UnitTests
             outputMock.Verify(o => o.InsertLogEntry(It.Is<DBLogEntry>(l => l.Id == "id" && l.Type == "type")));
         }
 
+        [TestMethod]
+        public void Process_WhenStartedEntryHasNoHostButStoppedHas_ShouldWriteHostFromStoppedEntry()
+        {
+            // Arrange
+            var outputMock = new Mock<IDBLogWriter>();
+            var inputMock = new Mock<ILogRepository>();
+            Dictionary<string, JsonLogEntry> fileLogDataStart = CreateInputWithOneStartedEventWithoutHost();
+            Dictionary<string, JsonLogEntry> fileLogDataStop = CreateInputWithOneStoppedWithHost();
+
+            inputMock.Setup(i => i.GetStartedEntries()).Returns(fileLogDataStart);
+            inputMock.Setup(i => i.GetStoppedEntries()).Returns(fileLogDataStop);
+
+
+            var sut = new LogParsingService(inputMock.Object, outputMock.Object);
+
+            // Act
+            sut.Process();
+
+
+            // Assert
+            outputMock.Verify(o => o.InsertLogEntry(It.Is<DBLogEntry>(l => l.Id == "id" && l.Host == "host")));
+        }
+
 
 
         [TestMethod]
@@ -135,6 +158,20 @@ namespace Log2DB.UnitTests
             };
         }
 
+        private static Dictionary<string, JsonLogEntry> CreateInputWithOneStartedEventWithoutHost()
+        {
+            return new Dictionary<string, JsonLogEntry>()
+            {
+                { "id", new JsonLogEntry()
+                    {
+                        Id = "id",
+                        State = LogEntryState.STARTED,
+                        TimeStamp = 0,
+                    }
+                }
+
+            };
+        }
         private static Dictionary<string, JsonLogEntry> CreateInputWithOneStoppedEventWithTenTimeStamp()
         {
             return new Dictionary<string, JsonLogEntry>()
@@ -167,6 +204,22 @@ namespace Log2DB.UnitTests
             };
         }
 
+        private Dictionary<string, JsonLogEntry> CreateInputWithOneStoppedWithHost()
+        {
+            return new Dictionary<string, JsonLogEntry>()
+            {
+                { "id", new JsonLogEntry()
+                    {
+                        Id = "id",
+                        State = LogEntryState.FINISHED,
+                        TimeStamp = 10,
+                        Host = "host"
+                    }
+                }
+
+            };
+        }
+
         private Dictionary<string, JsonLogEntry> CreateInputWithOneStoppedEventWithType()
         {
             return new Dictionary<string, JsonLogEntry>()
@@ -176,7 +229,6 @@ namespace Log2DB.UnitTests
                         Id = "id",
                         State = LogEntryState.FINISHED,
                         TimeStamp = 10,
-                        Host = "host",
                         Type = "type"
                     }
                 }

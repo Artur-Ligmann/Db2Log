@@ -27,8 +27,12 @@ namespace Log2DB
                         continue;
                     }
 
-
                     var timeDifferenece = entriesStop[entry.Key].TimeStamp - entry.Value.TimeStamp;
+
+                    if(timeDifferenece < 0)
+                    {
+                        continue;
+                    }
 
                     var value = entry.Value;
                     var host = value.Host ?? entriesStop[entry.Key].Host;
