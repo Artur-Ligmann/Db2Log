@@ -22,6 +22,12 @@ namespace Log2DB
 
                 foreach (var entry in entriesStart)
                 {
+                    if(!entriesStop.ContainsKey(entry.Key))
+                    {
+                        continue;
+                    }
+
+
                     var timeDifferenece = entriesStop[entry.Key].TimeStamp - entry.Value.TimeStamp;
 
                     var value = entry.Value;

@@ -31,13 +31,18 @@ namespace Log2DB
                 {
                     var entry = JsonConvert.DeserializeObject<JsonLogEntry>(line);
 
-                    if (entry.State == LogEntryState.STARTED)
+                    switch (entry.State)
                     {
-                        entriesStart[entry.Id] = entry;
-                    }
-                    if (entry.State == LogEntryState.FINISHED)
-                    {
-                        entriesStop[entry.Id] = entry;
+                        case LogEntryState.STARTED:
+                            {
+                                entriesStart[entry.Id] = entry;
+                                break;
+                            }
+                        case LogEntryState.FINISHED:
+                            {
+                                entriesStop[entry.Id] = entry;
+                                break;
+                            }
                     }
                 }
             }

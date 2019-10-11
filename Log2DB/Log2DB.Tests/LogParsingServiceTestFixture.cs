@@ -8,12 +8,35 @@ namespace Log2DB.UnitTests
 {
     [TestClass]
     public class LogParsingServiceTestFixture
-
     {
+
+        [TestMethod]
+        public void Process_WhenStartedEventExistsButNoAccordingStoppedEvent_ShouldNotThrowException()
+        {
+            // Arrange
+            var outputMock = new Mock<IDBLogWriter>();
+            var inputMock = new Mock<ILogRepository>();
+            var fileLogDataStart = CreateInputWithOneStartedEventWithoutType();
+            var fileLogDataStop = new Dictionary<string, JsonLogEntry>();
+
+            inputMock.Setup(i => i.GetStartedEntries()).Returns(fileLogDataStart);
+            inputMock.Setup(i => i.GetStoppedEntries()).Returns(fileLogDataStop);
+
+
+            var sut = new LogParsingService(inputMock.Object, outputMock.Object);
+
+            // Act
+            sut.Process();
+
+
+            // Assert
+            Assert.IsTrue(true);
+        }
 
         [TestMethod]
         public void Process_WhenStartedEntryHasNoTypeButStoppedHas_ShouldWriteTypeFromStoppedEntry()
         {
+            // Arrange
             var outputMock = new Mock<IDBLogWriter>();
             var inputMock = new Mock<ILogRepository>();
             Dictionary<string, JsonLogEntry> fileLogDataStart = CreateInputWithOneStartedEventWithoutType();
@@ -22,12 +45,14 @@ namespace Log2DB.UnitTests
             inputMock.Setup(i => i.GetStartedEntries()).Returns(fileLogDataStart);
             inputMock.Setup(i => i.GetStoppedEntries()).Returns(fileLogDataStop);
 
-
+            
             var sut = new LogParsingService(inputMock.Object, outputMock.Object);
 
-
+            // Act
             sut.Process();
 
+
+            // Assert
             outputMock.Verify(o => o.InsertLogEntry(It.Is<DBLogEntry>(l => l.Id == "id" && l.Type == "type")));
         }
 
