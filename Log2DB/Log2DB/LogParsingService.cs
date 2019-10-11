@@ -25,13 +25,16 @@ namespace Log2DB
                     var timeDifferenece = entriesStop[entry.Key].TimeStamp - entry.Value.TimeStamp;
 
                     var value = entry.Value;
+                    var host = value.Host ?? entriesStop[entry.Key].Host;
+                    var type = value.Type ?? entriesStop[entry.Key].Type;
+
                     var dbEntry = new DBLogEntry()
                     {
                         Duration = timeDifferenece,
                         Alert = timeDifferenece > _alertThreshold,
                         Id = entry.Key,
-                        Host = value.Host,
-                        Type = !String.IsNullOrEmpty(value.Type) ? value.Type.ToString() : String.Empty
+                        Host = host,
+                        Type = !String.IsNullOrEmpty(type) ? type.ToString() : String.Empty
                     };
 
                     _dbWriteRepository.InsertLogEntry(dbEntry);
